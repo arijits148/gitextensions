@@ -22,6 +22,7 @@
     <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
     <WixVariable Id="WixUISupportPerUser" Value="1" Overridable="yes" />
     <WixVariable Id="WixUISupportPerMachine" Value="1" Overridable="yes" />
+    
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
@@ -80,6 +81,9 @@
       </Component>
       <Component Id="gitex.cmd" Guid="*">
         <File Source="..\bin\gitex.cmd" />
+      </Component>
+      <Component Id="set_telemetry" Guid="*">
+        <File Source="..\bin\set-telemetry.ps1" />
       </Component>
       <Component Id="GitExtensions.exe" Guid="5530254F-DCAC-4C82-BD4B-F54D76024929">
         <File Source="..\GitExtensions\bin\$(var.Configuration)\GitExtensions.exe" KeyPath="yes">
@@ -1553,6 +1557,7 @@
     <Feature Id="GitExtensions" Title="Git Extensions" Level="1" Display="expand">
       <ComponentRef Id="gitextensions.ico" />
       <ComponentRef Id="gitex.cmd" />
+      <ComponentRef Id="set_telemetry" />
       <ComponentRef Id="GitExtensions.exe" />
       <ComponentRef Id="GitExtensions.exe.config" />
       <ComponentRef Id="GitCommands.dll" />

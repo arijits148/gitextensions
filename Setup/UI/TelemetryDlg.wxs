@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
+
+    <!-- Run the script that toggles telemetry as per the user's settings -->
+    <Property Id="POWERSHELLEXE">
+      <RegistrySearch Id="POWERSHELLEXE"
+          Type="raw"
+          Root="HKLM"
+          Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell"
+          Name="Path" />
+    </Property>
+    <Condition Message="This application requires Windows PowerShell.">
+      <![CDATA[Installed OR POWERSHELLEXE]]>
+    </Condition>
+
+    <SetProperty Id="ConfigureTelemetry"
+        Before ="ConfigureTelemetry"
+        Sequence="execute"
+        Value="&quot;[POWERSHELLEXE]&quot; -Version 3.0 -NoProfile -NonInteractive -InputFormat None -ExecutionPolicy Bypass -Command &quot;&amp; '[INSTALLDIR]\set-telemetry.ps1' ; exit $$($Error.Count)&quot;" />
+
+    <CustomAction Id="ConfigureTelemetry" BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Return="check" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action="ConfigureTelemetry" Before="InstallFinalize"><![CDATA[NOT Installed]]></Custom>
+    </InstallExecuteSequence>
+
+    <!--<Component Id="CONFIGURE_TELEMETRY.PS1" Guid="{C33883EF-4C60-43C2-B7F6-077BFC8F2CD9}" DiskId="1">
+      <File Id="CONFIGURE_TELEMETRY.PS1" Name="set-telemetry.ps1" Source="set-telemetry.ps1"/>
+    </Component>-->
+    
     <UI>
       <Dialog Id="GitEx_TelemetryDlg" Width="370" Height="270" Title="!(loc.VerifyReadyDlg_Title)" TrackDiskSpace="yes">
         <Control Id="Back" Type="PushButton" X="177" Y="243" Width="56" Height="18" Text="!(loc.WixUIBack)" />
